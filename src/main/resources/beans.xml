@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <context:component-scan base-package="com.iweb"></context:component-scan>
+<!--    spring自带的任务调度-->
+<!--&lt;!&ndash;    设置任务池的大小&ndash;&gt;-->
+<!--    <task:scheduler id="scheduler" pool-size="5"></task:scheduler>-->
+
+<!--    <task:scheduled-tasks>-->
+<!--&lt;!&ndash;        每五秒执行一次&ndash;&gt;-->
+<!--&lt;!&ndash;        <task:scheduled ref="myTask" method="doTask" fixed-delay="5000"></task:scheduled>&ndash;&gt;-->
+<!--&lt;!&ndash;        每五秒执行一次&ndash;&gt;-->
+<!--&lt;!&ndash;        表达式里面的时间为秒 分 时 日 月 星期&ndash;&gt;-->
+<!--&lt;!&ndash;        cron在线生成器：https://cron.qqe2.com/&ndash;&gt;-->
+<!--        <task:scheduled ref="myTask" method="doTask" cron="0/5 * * * * ? "/>-->
+<!--&lt;!&ndash;        每分钟执行一次&ndash;&gt;-->
+<!--        <task:scheduled ref="myTask" method="doTask" cron="0 0/1 * * * ? "/>-->
+<!--&lt;!&ndash;        指定时间，20:55:40秒执行&ndash;&gt;-->
+<!--        <task:scheduled ref="myTask" method="doTask" cron="40 55 20 * * ? "/>-->
+<!--    </task:scheduled-tasks>-->
+<!--    第三方任务调度-->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.iweb.task.MyTask1"></property>
+    </bean>
+
+    <!-- 也可以使用cron表达式指定调度规则 -->
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"/>
+        <property name="cronExpression" value="50 16 21 * * ?"/>
+    </bean>
+
+    <bean id="cronTrigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"/>
+        <property name="cronExpression" value="0 0/1 * * * ?"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+                <ref bean="cronTrigger1"/>
+            </list>
+        </property>
+    </bean>
+</beans>
